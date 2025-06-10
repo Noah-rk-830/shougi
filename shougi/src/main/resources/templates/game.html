@@ -35,6 +35,9 @@
                     <th>2</th>
                     <th>1</th>
                 </tr>
+                <tr th:each="row:*{bd}">
+                    <td th:each="koma:${row}" th:text="${koma.disp}"></td>
+                </tr>
             </table>
         </div>
         <div class="p1">
