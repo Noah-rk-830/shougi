@@ -6,6 +6,7 @@ https://github.com/TadaoYamaoka/DeepLearningShogi/releases
 
 開発環境：
 VSCode,java springboot+dlshougi(python経由)
+
 依存:spring web,spring boot dev tools,thymeleaf,lonbook
 (詳しくはbuild.gradleを参照ください)
 
