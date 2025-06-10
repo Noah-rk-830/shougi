@@ -8,31 +8,13 @@ public class Koma {
     private int kNo;//駒番号:駒名識別番号 成無視,0~7
     private boolean nari;
     private int user;//どちらの駒か
-    private int pos;//11~99,101,102
-    private String posStr;//1一～9九,先持,後持
+    private String pos;//AI表記に合わせる
     private String disp;//表記用 △歩,▽成香
     private String code;//sfen形式用 P,+r
 
-    public void setPosStr2Pos(){
-        int pos=this.pos;
-        String posStr="";
-        String[]kansuji={"一","二","三","四","五","六","七","八","九"};
-        if(pos/10==10){
-            if(this.user==1){
-                posStr="先持";
-            }else{
-                posStr="後持";
-            }
-        }else{
-            posStr+=String.valueOf(pos/10);
-            posStr+=kansuji[pos%10-1];
-        }
-        this.posStr=posStr;
-    }
-
     public void setDisp2Values(){
         String disp="";
-        if(pos/10==10){
+        if(pos.startsWith("hand_")){
             this.disp=disp;
         }else{
             if(user==1){
