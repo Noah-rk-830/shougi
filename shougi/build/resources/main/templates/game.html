@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"></html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link th:href="@{/css/mycss.css}" rel="stylesheet" type="text/css">
+<!-- <link rel="stylesheet" href="../static/css/mycss.css" type="text/css"> -->
+<title>対局</title>
+</head>
+<body>
+    <h1>対局</h1>
+    <form id="bdForm" th:action="@{/}" method="post" th:object="${bdForm}">
+        <div class="p2">
+            <h2><span th:text="*{p2Name}"></span></h2>
+            <h3>持駒</h3>
+            <table class="p2M">
+                <tr>
+                    <th>歩</th><th>香</th><th>桂</th><th>銀</th><th>金</th><th>角</th><th>飛</th>
+                </tr>
+                <tr>
+                    <td th:each="cnt,row:*{p2M}" th:text="${cnt}"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="p1">
+            <h2><span th:text="*{p1Name}"></span></h2>
+            <h3>持駒</h3>
+            <table class="p1M">
+                <tr>
+                    <th>歩</th><th>香</th><th>桂</th><th>銀</th><th>金</th><th>角</th><th>飛</th>
+                </tr>
+                <tr>
+                    <td th:each="cnt,row:*{p1M}" th:text="${cnt}"></td>
+                </tr>
+            </table>
+        </div>
+    </form>
+</body>
+</html>

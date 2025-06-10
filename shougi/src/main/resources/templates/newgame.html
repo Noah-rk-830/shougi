@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"></html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link th:href="@{/css/mycss.css}" rel="stylesheet" type="text/css">
+<!-- <link rel="stylesheet" href="../static/css/mycss.css" type="text/css"> -->
+<title>新規対局</title>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const vsRadios = document.querySelectorAll('input[name="vs"]');
+        const difSelect = document.querySelector('select[name="dif"]');
+        const difRDiv = document.querySelector('.difR');
+        const sgRow = document.querySelector('.sg');
+    
+        function updateDisplay() {
+            const vsValue = document.querySelector('input[name="vs"]:checked')?.value;
+            const difValue = difSelect?.value;
+    
+            // difRの表示条件：vs=1かつdif≠0 のときだけ表示
+            if (vsValue === "1" && difValue !== "0") {
+                difRDiv.style.display = "block";
+            } else {
+                difRDiv.style.display = "none";
+            }
+    
+            // sgの表示条件：dif=0 かつ vs=1 のときだけ表示
+            if (difValue === "0" && vsValue === "1") {
+                sgRow.style.display = "table-row";
+            } else {
+                sgRow.style.display = "none";
+            }
+        }
+    
+        vsRadios.forEach(radio => {
+            radio.addEventListener("change", updateDisplay);
+        });
+    
+        difSelect.addEventListener("change", updateDisplay);
+    
+        updateDisplay(); // 初期表示
+    });
+</script>    
+</head>
+<body>
+    <form th:action="@{/}" method="post" th:object="${config}">
+    <h1>対局設定</h1>
+    <table border="1" class="tb">
+        <tr>
+            <th>対局相手</th>
+            <td>
+                <label><input type="radio" name="vs" th:field="*{vs}" th:value="0">人間</label>
+                <label><input type="radio" name="vs" th:field="*{vs}" th:value="1">AI</label>
+            </td>
+        </tr>
+        <tr>
+            <th>駒落ち</th>
+            <td>
+                <select name="dif" th:field="*{dif}" style="font-size: large;">
+                    <option th:value="0" th:text="平手"></option>
+                    <option th:value="1" th:text="香落ち"></option>
+                    <option th:value="2" th:text="角落ち"></option>
+                    <option th:value="3" th:text="飛車落ち"></option>
+                    <option th:value="4" th:text="飛車香落ち"></option>
+                    <option th:value="5" th:text="二枚落ち"></option>
+                    <option th:value="6" th:text="四枚落ち"></option>
+                    <option th:value="7" th:text="六枚落ち"></option>
+                </select>
+                <br>
+                <div class="difR">
+                <label><input type="radio" th:field="*{difR}" th:value="0">AI有利</label>
+                <label><input type="radio" th:field="*{difR}" th:value="1">人間有利</label>
+                </div>
+            </td>
+        </tr>
+        <tr class="sg">
+            <th>先後(人間)</th>
+            <td>
+                <label><input type="radio" th:field="*{sg}" th:value="0">先手</label>
+                <label><input type="radio" th:field="*{sg}" th:value="1">後手</label>
+            </td>
+        </tr>
+    </table>
+    <div class="submit">
+        <button type="submit" th:formaction="@{/shogi/game}">対局開始</button>
+        <button type="submit" th:formaction="@{/shogi/totitle}">タイトルに戻る</button>
+    </div>
+    </form>
+    <table class="fixed-icon">
+        <tr>
+            <td onclick="location.href='/shogi/mypage'">
+                <img th:src="@{/image/icon.png}" alt="icon">
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

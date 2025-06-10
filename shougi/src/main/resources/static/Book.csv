@@ -1,0 +1,7 @@
+﻿香落ち,"<option th:value=""1"" th:text=""香落ち""></option>",1
+角落ち,"<option th:value=""2"" th:text=""角落ち""></option>",2
+飛車落ち,"<option th:value=""3"" th:text=""飛車落ち""></option>",3
+飛車香落ち,"<option th:value=""4"" th:text=""飛車香落ち""></option>",4
+二枚落ち,"<option th:value=""5"" th:text=""二枚落ち""></option>",5
+四枚落ち,"<option th:value=""6"" th:text=""四枚落ち""></option>",6
+六枚落ち,"<option th:value=""7"" th:text=""六枚落ち""></option>",7
