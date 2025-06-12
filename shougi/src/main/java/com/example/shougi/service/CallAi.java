@@ -13,7 +13,7 @@ public class CallAi {
     /**
      * MainData から SFEN 形式の文字列を生成する
      */
-    public static String toSfen(MainData data) {
+    public String toSfen(MainData data) {
         StringBuilder boardPart = new StringBuilder();
 
         List<List<Koma>> bd = data.getBd();

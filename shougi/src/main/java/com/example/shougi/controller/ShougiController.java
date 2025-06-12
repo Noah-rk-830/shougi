@@ -71,8 +71,8 @@ public class ShougiController {
     @GetMapping("/test")
     public String test(Model model){
         // game.html
-        BdForm bdForm=new BdForm();
-        mainService.setDummyBdForm(bdForm);
+        MainData mainData=new MainData();
+        BdForm bdForm=mainService.setDummyBdForm1(mainData);
         model.addAttribute("bdForm",bdForm);
         
         return "game";

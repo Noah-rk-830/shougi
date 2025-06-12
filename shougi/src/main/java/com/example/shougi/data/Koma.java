@@ -12,7 +12,7 @@ public class Koma {
     private String disp;//表記用 △歩,▽成香
     private String code;//sfen形式用 P,+r
 
-    public void setDisp2Values(){
+    public void values2Disp(){
         String disp="";
         if(pos.startsWith("hand_")){
             this.disp=disp;
@@ -32,7 +32,7 @@ public class Koma {
             this.disp=disp;
         }
     }
-    public void setValues2Code(boolean p1S){//p1が先手か
+    public void code2Values(boolean p1S){//p1が先手か
         String code=this.code;
         String[]codeAB={"p","l","n","s","g","b","r","k"};
         if(code.charAt(0)=='+'){
@@ -46,18 +46,30 @@ public class Koma {
                 this.kNo=i;
                 if(code.equals(codeAB[i])){
                     if(p1S){
-                        this.user=2;
-                    }else{
                         this.user=1;
+                    }else{
+                        this.user=2;
                     }
                 }else{
                     if(p1S){
-                        this.user=1;
-                    }else{
                         this.user=2;
+                    }else{
+                        this.user=1;
                     }
                 }
             }
         }
+    }
+    public void values2Code(boolean p1S){
+        String[] codeAB = {"P", "L", "N", "S", "G", "B", "R", "K"};
+        String base = codeAB[this.kNo];
+        if (!this.isSente(p1S)) {
+            base = base.toLowerCase();
+        }
+        String code=(this.nari ? "+" : "") + base;
+        this.code=code;
+    }
+    public boolean isSente(boolean p1S) {
+        return (p1S && user == 1) || (!p1S && user == 2); // 先手かどうかを判定
     }
 }

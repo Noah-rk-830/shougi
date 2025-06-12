@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -72,5 +73,33 @@ public class MainServoceImpl implements MainService{
 
         bdForm.setP1Name("p1");
         bdForm.setP2Name("p2");
+    }
+    public BdForm setDummyBdForm1(MainData mainData){
+        String sampleSfen="lnsgk1snl/1r4gb1/p1ppppppp/9/9/9/P+pPPPPP1P/1B1KG2R1/LNSG2SNL b Pp 1";
+        mainData.sfen2Bd(sampleSfen);
+        return convertToBdForm(mainData);
+    }
+    @Override
+    // game
+    public BdForm convertToBdForm(MainData mainData) {
+        BdForm bdForm = new BdForm();
+    
+        bdForm.setP1Name(mainData.getP1Name());
+        bdForm.setP2Name(mainData.getP2Name());
+        bdForm.setP1M(new ArrayList<>(mainData.getP1M())); // ディープコピー推奨
+        bdForm.setP2M(new ArrayList<>(mainData.getP2M()));
+        bdForm.setReverse(!mainData.isP1S()); // p1が先手 → reverse=false
+        bdForm.setBd(mainData.getBd()); // bdはそのまま参照渡しでも可（必要ならコピー）
+    
+        return bdForm;
+    }    
+    @Override
+    // game AI
+    // 動ける場所を取得
+    public Map<String, List<String>>getLegalMoves(MainData data){
+        CallAi callAi=new CallAi();
+        String sfen=callAi.toSfen(data);
+        Map<String, List<String>>ret=callAi.getLegalMoves(sfen);
+        return ret;
     }
 }

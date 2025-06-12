@@ -23,21 +23,36 @@
             </table>
         </div>
         <div class="bd">
-            <table border="1" th:if="*{reverse==false}">
-                <tr>
-                    <th>9</th>
-                    <th>8</th>
-                    <th>7</th>
-                    <th>6</th>
-                    <th>5</th>
-                    <th>4</th>
-                    <th>3</th>
-                    <th>2</th>
-                    <th>1</th>
-                </tr>
-                <tr th:each="row:*{bd}">
-                    <td th:each="koma:${row}" th:text="${koma.disp}"></td>
-                </tr>
+            <table>
+                <!-- 上部のアラビア数字：筋 -->
+                <thead>
+                    <tr>
+                        <th>9</th>
+                        <th>8</th>
+                        <th>7</th>
+                        <th>6</th>
+                        <th>5</th>
+                        <th>4</th>
+                        <th>3</th>
+                        <th>2</th>
+                        <th>1</th>
+                        <th></th> <!-- 右端の空白（漢数字列との整合用） -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="row, rowStat : *{bd}">
+                        <!-- 駒を描画 -->
+                        <td th:each="koma, colStat : ${row}"
+                            th:text="${koma.disp}"
+                            th:onclick="|selectCell(${rowStat.index}, ${colStat.index})|"
+                            style="cursor:pointer;"
+                            class="board">
+                        </td>
+            
+                        <!-- 右端：漢数字を表示 -->
+                        <td th:text="*{kansuji[__${rowStat.index}__]}" class="kansuji"></td>
+                    </tr>
+                </tbody>
             </table>
         </div>
         <div class="p1">
@@ -48,10 +63,29 @@
                     <th>歩</th><th>香</th><th>桂</th><th>銀</th><th>金</th><th>角</th><th>飛</th>
                 </tr>
                 <tr>
-                    <td th:each="cnt,row:*{p1M}" th:text="${cnt}"></td>
-                </tr>
+                    <td th:each="cnt, stat : *{p1M}" 
+                        th:text="${cnt}" 
+                        th:onclick="|selectMochigoma(${stat.index})|" 
+                        style="cursor:pointer;">
+                    </td>
+                </tr>                
             </table>
         </div>
+        <input type="hidden" id="selectedRow" name="selectedRow" th:field="*{selectedRow}" />
+        <input type="hidden" id="selectedCol" name="selectedCol" th:field="*{selectedCol}" />
+        <input type="hidden" id="selectedMochigomaKNo" name="selectedMochigomaKNo" th:field="*{selectedMochigomaKNo}" />
     </form>
+    <script>
+        function selectCell(row, col) {
+            document.getElementById("selectedRow").value = row;
+            document.getElementById("selectedCol").value = col;
+            document.getElementById("bdForm").submit();
+        }
+    
+        function selectMochigoma(kNo) {
+            document.getElementById("selectedMochigomaKNo").value = kNo;
+            document.getElementById("bdForm").submit();
+        }
+    </script>    
 </body>
 </html>
