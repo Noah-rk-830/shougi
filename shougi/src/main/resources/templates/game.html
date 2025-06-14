@@ -24,36 +24,35 @@
         </div>
         <div class="bd">
             <table>
-                <!-- 上部のアラビア数字：筋 -->
-                <thead>
-                    <tr>
-                        <th>9</th>
-                        <th>8</th>
-                        <th>7</th>
-                        <th>6</th>
-                        <th>5</th>
-                        <th>4</th>
-                        <th>3</th>
-                        <th>2</th>
-                        <th>1</th>
-                        <th></th> <!-- 右端の空白（漢数字列との整合用） -->
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="row, rowStat : *{bd}">
-                        <!-- 駒を描画 -->
-                        <td th:each="koma, colStat : ${row}"
-                            th:text="${koma.disp}"
-                            th:onclick="|selectCell(${rowStat.index}, ${colStat.index})|"
-                            style="cursor:pointer;"
-                            class="board">
-                        </td>
-            
-                        <!-- 右端：漢数字を表示 -->
-                        <td th:text="*{kansuji[__${rowStat.index}__]}" class="kansuji"></td>
-                    </tr>
-                </tbody>
-            </table>
+    <thead>
+        <tr>
+            <th>9</th>
+            <th>8</th>
+            <th>7</th>
+            <th>6</th>
+            <th>5</th>
+            <th>4</th>
+            <th>3</th>
+            <th>2</th>
+            <th>1</th>
+            <th></th> </tr>
+    </thead>
+    <tbody>
+        <tr th:each="row, rowStat : *{bd}">
+            <td th:each="koma, colStat : ${row}"
+                th:onclick="|selectCell(${rowStat.index}, ${colStat.index})|"
+                style="cursor:pointer;"
+                class="board-cell"> <img th:if="${koma.imgPath}"
+                     th:src="@{${koma.imgPath}}"
+                     th:alt="${koma.disp}"
+                     th:classappend="${koma.user == 2} ? 'rotate-180'"
+                     class="koma-image"/>
+            </td>
+
+            <td th:text="*{kansuji[__${rowStat.index}__]}" class="kansuji"></td>
+        </tr>
+    </tbody>
+</table>
         </div>
         <div class="p1">
             <h2><span th:text="*{p1Name}"></span></h2>
