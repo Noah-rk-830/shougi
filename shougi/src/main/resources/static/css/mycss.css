@@ -145,3 +145,43 @@ h1{
 .bd .board{
     background-color: rgba(255, 255, 255, 0.3);
 }
+/* General styling for all koma images */
+.koma-image {
+    max-width: 100%;  /* Ensures images fit within the cell */
+    height: auto;     /* Maintains aspect ratio */
+    display: block;   /* Removes extra space below image */
+    /* Add any other default image styles here (e.g., margin, padding) */
+}
+
+/* Rotation for images where koma.user is 2 */
+.koma-image.rotate-180 {
+    transform: rotate(180deg);
+    /* By default, transform-origin is center center, which is usually desired for rotation */
+}
+
+/* Optional: If you want to ensure the cell content (image) is centered */
+.board-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* You might want to set a min-width/min-height for cells here */
+    min-width: 50px; /* Example value, adjust as needed */
+    min-height: 50px; /* Example value, adjust as needed */
+}
+
+/* Optional: If the table itself needs to be rotated (as discussed previously) */
+/*
+table {
+    transform: rotate(180deg);
+    transform-origin: center center;
+}
+
+table th, table td {
+    transform: rotate(180deg); // To counter-rotate the table content if the table is rotated
+}
+
+.kansuji {
+    transform: rotate(180deg); // To counter-rotate the Kanji if the table is rotated
+}
+*/
+
