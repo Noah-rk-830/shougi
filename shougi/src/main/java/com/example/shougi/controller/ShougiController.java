@@ -1,5 +1,6 @@
 package com.example.shougi.controller;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -51,7 +52,6 @@ public class ShougiController {
         if(mainData==null){
             mainData=new MainData();
             kifuform=mainService.setDummyKifu(mainData);
-            System.out.println("dummy");
             session.setAttribute("mainData",mainData);
         }else{
             kifuform=new KifuForm();
@@ -60,21 +60,54 @@ public class ShougiController {
         model.addAttribute("kifuForm",kifuform);
         return "kifuList";
     }
-    @PostMapping("/retunbykihuList")
-    public String retunbykihuList(@ModelAttribute("kifuForm")KifuForm kifuForm){
+    @PostMapping("/returnbykihuList")
+    public String returnbykihuList(@ModelAttribute("kifuForm")KifuForm kifuForm){
         MainData mainData=(MainData) session.getAttribute("mainData");
         mainService.setKifu2Form(mainData,kifuForm);
         session.setAttribute("mainData",mainData);
         return "redirect:/shogi/title";
     }
+    @PostMapping("/game")
+    public String game(@ModelAttribute("config")NewgameModel config,Model model){
+        MainData mainData=(MainData)session.getAttribute("mainData");
+        if(mainData==null){
+            mainData=new MainData();
+            session.setAttribute("mainData",mainData);
+        }
+        BdForm bdForm=mainService.setNewGame(config,mainData);
+        model.addAttribute("bdForm",bdForm);
+        session.setAttribute("mainData",mainData);
 
-    @GetMapping("/test")
-    public String test(Model model){
-        // game.html
-        MainData mainData=new MainData();
-        BdForm bdForm=mainService.setDummyBdForm1(mainData);
+        return "game";
+    }
+    @PostMapping("/gameret")
+    public String gameret(@ModelAttribute("bdForm")BdForm bdForm,Model model){
+        MainData mainData=(MainData)session.getAttribute("mainData");
+        if(mainData==null){
+            mainData=new MainData();
+            session.setAttribute("mainData",mainData);
+        }
+        bdForm=mainService.convertToBdForm(mainData);
+        model.addAttribute("bdForm",bdForm);
+        session.setAttribute("mainData",mainData);
+
+        return "game";
+    }
+    @PostMapping("/game1")
+    public String game1(@ModelAttribute("bdForm")BdForm bdForm,Model model){
+        MainData mainData=(MainData)session.getAttribute("mainData");
+        bdForm=mainService.selectKoma(bdForm,mainData);
         model.addAttribute("bdForm",bdForm);
         
-        return "game";
+        // return "game1";
+        return "test";
+    }
+    @PostMapping("/game2")
+    public String game2(@ModelAttribute("bdForm")BdForm bdForm,Model model){
+        MainData mainData=(MainData)session.getAttribute("mainData");
+        // bdForm=mainService.selectKoma(bdForm,mainData);駒を動かさせる
+        model.addAttribute("bdForm",bdForm);
+        
+        return "game2";
     }
 }

@@ -17,15 +17,15 @@
             const vsValue = document.querySelector('input[name="vs"]:checked')?.value;
             const difValue = difSelect?.value;
     
-            // difRの表示条件：vs=1かつdif≠0 のときだけ表示
-            if (vsValue === "1" && difValue !== "0") {
+            // difRの表示条件：vs=1かつdif≠0and!=8 のときだけ表示
+            if (vsValue === "1" && (difValue !== "0" && difValue!=="8")) {
                 difRDiv.style.display = "block";
             } else {
                 difRDiv.style.display = "none";
             }
     
-            // sgの表示条件：dif=0 かつ vs=1 のときだけ表示
-            if (difValue === "0" && vsValue === "1") {
+            // sgの表示条件：dif=0or8 かつ vs=1 のときだけ表示
+            if ((difValue === "0" || difValue==="8") && vsValue === "1") {
                 sgRow.style.display = "table-row";
             } else {
                 sgRow.style.display = "none";
@@ -65,6 +65,7 @@
                     <option th:value="5" th:text="二枚落ち"></option>
                     <option th:value="6" th:text="四枚落ち"></option>
                     <option th:value="7" th:text="六枚落ち"></option>
+                    <option th:value="8" th:text="sanple"></option>
                 </select>
                 <br>
                 <div class="difR">

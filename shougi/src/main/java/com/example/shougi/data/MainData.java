@@ -1,6 +1,7 @@
 package com.example.shougi.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,23 @@ public class MainData {
     private List<List<Koma>>bd;//Komaの二重リスト
     private boolean teban;//先手番:true
     private int tesu=1;//手数
+    private boolean ai;//対AI=true
+
+    // 駒コードの順番（歩, 香, 桂, 銀, 金, 角, 飛）
+    static final List<String> komaOrder = List.of("P", "L", "N", "S", "G", "B", "R");
+
+
+    public List<List<Koma>> getReversedBoard() {
+        if(bd == null){return null;}
+        List<List<Koma>> reversed = new ArrayList<>();
+        for (int i = bd.size() - 1; i >= 0; i--) {
+            List<Koma> originalRow = bd.get(i);
+            List<Koma> newRow = new ArrayList<>(originalRow);
+            Collections.reverse(newRow);
+            reversed.add(newRow);
+        }
+        return reversed;
+    }    
 
     public String bd2Sfen() {
         StringBuilder sfen = new StringBuilder();
@@ -98,6 +116,7 @@ public class MainData {
                         Koma empty = new Koma();
                         empty.setId(-1);
                         empty.setDisp("");
+                        empty.setCode("");
                         row.add(empty);
                         colIdx++;
                     }
@@ -130,36 +149,45 @@ public class MainData {
         // --- 手番 ---
         teban = parts[1].equals("b");
         // --- 持ち駒 ---
-        p1M = new ArrayList<>();
-        p2M = new ArrayList<>();
         String hands = parts[2];
+        // 各プレイヤーの持ち駒を初期化（全て0で始まる）
+        p1M = new ArrayList<>(Collections.nCopies(komaOrder.size(), 0));
+        p2M = new ArrayList<>(Collections.nCopies(komaOrder.size(), 0));
+
         if (!hands.equals("-")) {
             int i = 0;
             while (i < hands.length()) {
                 int count = 1;
+
+                // 数字（個数）がある場合、読み取る
                 if (Character.isDigit(hands.charAt(i))) {
                     int start = i;
                     while (i < hands.length() && Character.isDigit(hands.charAt(i))) i++;
                     count = Integer.parseInt(hands.substring(start, i));
                 }
+
+                if (i >= hands.length()) break; // 安全対策
                 char ch = hands.charAt(i);
-                String code = String.valueOf(ch);
-                Koma koma = new Koma();
-                koma.setCode(code);
-                koma.code2Values(p1S);
-                int kNo = koma.getKNo();
-                for (int j = 0; j < count; j++) {
-                    if (koma.getUser() == (p1S ? 1 : 2)) {
-                        p1M.add(kNo);
-                    } else {
-                        p2M.add(kNo);
-                    }
+                boolean isP1 = Character.isUpperCase(ch); // 大文字 → 先手
+                String code = String.valueOf(Character.toUpperCase(ch)); // 駒コードを大文字化
+
+                int kNo = komaOrder.indexOf(code);
+                if (kNo == -1) {
+                    throw new IllegalArgumentException("未知の駒コード: " + code);
                 }
+
+                // 持ち駒を加算
+                if (isP1) {
+                    p1M.set(kNo, p1M.get(kNo) + count);
+                } else {
+                    p2M.set(kNo, p2M.get(kNo) + count);
+                }
+
                 i++;
             }
         }
         // --- 手数 ---
         tesu = Integer.parseInt(parts[3]);
-    }    
+    }
 
 }

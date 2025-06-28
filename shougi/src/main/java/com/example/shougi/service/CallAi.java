@@ -23,7 +23,7 @@ public class CallAi {
             for (int col = 0; col < 9; col++) {
                 Koma koma = bd.get(row).get(col);
 
-                if (koma.getKNo() == -1) { // 空白
+                if (koma.getKNo() == -1 ||koma.getCode().equals("")) { // 空白
                     emptyCount++;
                 } else {
                     if (emptyCount > 0) {
@@ -31,6 +31,9 @@ public class CallAi {
                         emptyCount = 0;
                     }
                     String code =koma.getCode();
+                    if(code.equals("")){
+                        emptyCount++;
+                    }
                     boardPart.append(code);
                 }
             }
@@ -81,10 +84,11 @@ public class CallAi {
     public Map<String, List<String>> getLegalMoves(String sfen){
         String url = "http://localhost:8000/legal_moves";
         RestTemplate restTemplate = new RestTemplate();
-    
+
         // JSON送信内容
         Map<String, String> requestBody = Map.of("sfen", sfen);
         HttpHeaders headers = new HttpHeaders();
+
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Map<String, String>> request = new HttpEntity<>(requestBody, headers);
     

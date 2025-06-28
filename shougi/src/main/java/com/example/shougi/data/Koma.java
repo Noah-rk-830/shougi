@@ -10,7 +10,20 @@ public class Koma {
     private int user;//どちらの駒か
     private String pos;//AI表記に合わせる
     private String disp;//表記用 △歩,▽成香
+    private String imgPath;//imgのpath /image/koma/?
     private String code;//sfen形式用 P,+r
+
+    public void setImgPath(){
+        String[]path1={"hu","kyou","kei","gin","kin","kaku","hisha","gyoku"};
+        String[]path2={"tokin","narikyou","narikei","narigin","","ryouma","ryuuou",""};
+        String path="/image/koma/";
+        if(nari){
+            path+=path2[kNo];
+        }else{
+            path+=path1[kNo];
+        }
+        this.imgPath=path+".png";
+    }
 
     public void values2Disp(){
         String disp="";
@@ -30,6 +43,7 @@ public class Koma {
                 disp+=komaName[kNo];
             }
             this.disp=disp;
+            setImgPath();
         }
     }
     public void code2Values(boolean p1S){//p1が先手か

@@ -9,7 +9,7 @@
 </head>
 <body>
     <h1>対局</h1>
-    <form id="bdForm" th:action="@{/shogi/game1}" method="post" th:object="${bdForm}">
+    <form id="bdForm" th:action="@{/shogi/}" method="post" th:object="${bdForm}">
         <div class="p2">
             <h2><span th:text="*{p2Name}" th:if="*{reverse==false}"></span></h2>
             <h2><span th:text="*{p1Name}" th:if="*{reverse==true}"></span></h2>
@@ -47,22 +47,41 @@
                 </thead>
                 <tbody>
                     <tr th:each="row, rowStat : *{bd}">
-                        <!-- 行の左端：漢数字 -->
-                        <td class="kansuji" th:text="*{kansuji[__${rowStat.index}__]}" 
-                        style="width: 25px;" th:if="*{reverse==true}"></td>
-                        <!-- 横方向の駒 -->
                         <td th:each="koma, colStat : ${row}"
-                            th:onclick="|selectCell(${rowStat.index}, ${colStat.index})|"
-                            class="board">
-                            <img th:if="${koma.imgPath}"
-                                th:src="@{${koma.imgPath}}"
-                                th:alt="${koma.disp}"
-                                th:classappend="${koma.user == 1} ? ' rotate-180' : ''"
-                                class="koma-image"/>
-                        </td>
-                        <!-- 行の左端：漢数字 -->
+    th:with="isMoving = (${rowStat.index} == *{selectedRow} and ${colStat.index} == *{selectedCol}),
+             isInMoveList = ${bdForm.isInMoveList(rowStat.index, colStat.index)}"
+    th:if="*{reverse==false}">
+
+    <div th:onclick="|handleClick(${rowStat.index}, ${colStat.index}, ${isInMoveList})|"
+     th:classappend="${isMoving} ? ' moving-cell' : (${isInMoveList} ? ' movable-cell' : '')"
+     class="board"
+     th:style="${isInMoveList} ? 'background-color: yellow;min-width: 60px;min-height: 60px;' : ''">
+     <img th:if="${koma.imgPath}"
+         th:src="@{${koma.imgPath}}"
+         th:alt="${koma.disp}"
+         th:classappend="${koma.user == 1} ? ' rotate-180' : ''"
+         class="koma-image"/>
+</div>
+</td>
+
+<td th:each="koma, colStat : ${row}"
+    th:with="isMoving = (${rowStat.index} == *{selectedRow} and ${colStat.index} == *{selectedCol}),
+             isInMoveList = ${bdForm.isInMoveList(rowStat.index, colStat.index)}"
+    th:if="*{reverse==true}">
+
+    <div th:onclick="|handleClick(${rowStat.index}, ${colStat.index}, ${isInMoveList})|"
+     th:classappend="${isMoving} ? ' moving-cell' : (${isInMoveList} ? ' movable-cell' : '')"
+     class="board"
+     th:style="${isInMoveList} ? 'background-color: yellow;min-width: 60px;min-height: 60px;' : ''">
+     <img th:if="${koma.imgPath}"
+         th:src="@{${koma.imgPath}}"
+         th:alt="${koma.disp}"
+         th:classappend="${koma.user == 1} ? ' rotate-180' : ''"
+         class="koma-image"/>
+</div>
+</td>
                         <td class="kansuji" th:text="*{kansuji[__${rowStat.index}__]}" 
-                        style="width: 25px;" th:if="*{reverse==false}"></td>
+                            style="width: 25px;" th:if="*{reverse==false}"></td>
                     </tr>
                 </tbody>
             </table>
@@ -74,9 +93,7 @@
             <div class="scroll">
             <table class="p1M">
                 <tr th:if="*{reverse==false}">
-                    <td th:each="koma,stat : *{p1Mochi}" 
-                        th:onclick="|selectMochigoma(${koma.kNo})|" 
-                        style="cursor:pointer;">
+                    <td th:each="koma,stat : *{p1Mochi}">
                         <img th:if="${koma.imgPath}"
                             th:src="@{${koma.imgPath}}"
                             th:alt="${koma.disp}"
@@ -84,9 +101,7 @@
                     </td>
                 </tr>
                 <tr th:if="*{reverse==true}">
-                    <td th:each="koma,stat : *{p2Mochi}" 
-                        th:onclick="|selectMochigoma(${koma.kNo})|" 
-                        style="cursor:pointer;">
+                    <td th:each="koma,stat : *{p2Mochi}">
                         <img th:if="${koma.imgPath}"
                             th:src="@{${koma.imgPath}}"
                             th:alt="${koma.disp}"
@@ -99,6 +114,8 @@
         <input type="hidden" id="selectedRow" name="selectedRow" th:field="*{selectedRow}" />
         <input type="hidden" id="selectedCol" name="selectedCol" th:field="*{selectedCol}" />
         <input type="hidden" id="selectedMochigomaKNo" name="selectedMochigomaKNo" th:field="*{selectedMochigomaKNo}" />
+        <input type="hidden" id="moveToRow" name="moveToRow" th:field="*{moveToRow}"/>
+        <input type="hidden" id="moveToCol" name="moveToCol" th:field="*{moveToCol}"/>
     </form>
     <script>
         function selectCell(row, col) {
@@ -106,11 +123,33 @@
             document.getElementById("selectedCol").value = col;
             document.getElementById("bdForm").submit();
         }
-    
+
         function selectMochigoma(kNo) {
             document.getElementById("selectedMochigomaKNo").value = kNo;
             document.getElementById("bdForm").submit();
         }
+
+        function handleClick(row, col, isMovable) {
+    console.log(`handleClick called: row=${row}, col=${col}, isMovable=${isMovable}, type=${typeof isMovable}`); // デバッグログを追加
+    if (isMovable === true) {
+        document.getElementById("moveToRow").value = row;
+        document.getElementById("moveToCol").value = col;
+        document.getElementById("bdForm").action = "/shogi/game2";
+    } else {
+        document.getElementById("selectedRow").value = row;
+        document.getElementById("selectedCol").value = col;
+        document.getElementById("bdForm").action = "/shogi/gameret";
+    }
+    document.getElementById("bdForm").submit();
+}
     </script>
+    <style>
+        .moving-cell {
+            background-color: white;
+        }
+        .movable-cell {
+            background-color: yellow;
+        }
+    </style>
 </body>
 </html>

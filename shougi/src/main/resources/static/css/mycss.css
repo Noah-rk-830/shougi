@@ -106,15 +106,36 @@ h1{
 .p2 ,.p1{
     display: flex;
     align-items: center; /* 中央揃え */
+    justify-content: center;
+    max-width: 600px; 
+    margin: auto;
     gap: 40px; /* 各要素間に十分な間隔 */
+}
+.p2 h2,.p1 h2,.p1 h3,.p2 h3{
+    white-space: nowrap;
+    padding-right: 8px;
+}
+.p1 .scroll,.p2 .scroll{
+    overflow-x: auto;
+    white-space: nowrap;
+    flex: 1;
 }
 .p2M ,.p1M{
     border-collapse: collapse;
+    width: 100%;
+    max-width: 600px; /* .bd tableと同じ幅 */
+    margin: auto;
+    overflow-x: auto; /* 横スクロール有効化 */
+    overflow-y: hidden; /* 縦スクロール無効化 */
+    white-space: nowrap; /* tdを横並びで詰める */
 }
-.p2M th, .p2M td ,.p1M th ,.p1M td{
-    border: 1px solid #ccc;
-    padding: 8px;
-    text-align: center;
+.p2M td ,.p1M td{
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+}
+.p1M td{
+    cursor: pointer;
 }
 .bd td{
     border: 2px solid black;
@@ -142,46 +163,22 @@ h1{
     overflow: hidden;
     border: 2px solid black;
 }
-.bd .board{
-    background-color: rgba(255, 255, 255, 0.3);
-}
-/* General styling for all koma images */
-.koma-image {
-    max-width: 100%;  /* Ensures images fit within the cell */
-    height: auto;     /* Maintains aspect ratio */
-    display: block;   /* Removes extra space below image */
-    /* Add any other default image styles here (e.g., margin, padding) */
-}
-
-/* Rotation for images where koma.user is 2 */
-.koma-image.rotate-180 {
-    transform: rotate(180deg);
-    /* By default, transform-origin is center center, which is usually desired for rotation */
-}
-
-/* Optional: If you want to ensure the cell content (image) is centered */
 .board-cell {
     display: flex;
     justify-content: center;
     align-items: center;
-    /* You might want to set a min-width/min-height for cells here */
-    min-width: 50px; /* Example value, adjust as needed */
-    min-height: 50px; /* Example value, adjust as needed */
+    min-width: 60px;
+    min-height: 60px;
 }
-
-/* Optional: If the table itself needs to be rotated (as discussed previously) */
-/*
-table {
+.koma-image {
+    width: 60px;
+    height: 60px;
+    display: block;
+    object-fit: contain; /* 画像の縦横比を保ちつつ枠内に収める */
+}
+.koma-image.rotate-180 {
     transform: rotate(180deg);
-    transform-origin: center center;
 }
-
-table th, table td {
-    transform: rotate(180deg); // To counter-rotate the table content if the table is rotated
+.movable-cell {
+    background-color: yellow !important;
 }
-
-.kansuji {
-    transform: rotate(180deg); // To counter-rotate the Kanji if the table is rotated
-}
-*/
-
