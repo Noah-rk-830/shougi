@@ -7,6 +7,7 @@ app = FastAPI()
 
 @app.post("/legal_moves")
 async def get_legal_moves(data: dict):
+    print('run api')
     sfen = data["sfen"]
     board = shogi.Board(sfen)
 
@@ -15,7 +16,8 @@ async def get_legal_moves(data: dict):
         if move.from_square is not None:
             f = shogi.SQUARE_NAMES[move.from_square]
             t = shogi.SQUARE_NAMES[move.to_square]
-            move_map.setdefault(f, []).append(t)
+            key = f"{f}{'+' if move.promotion else ''}"  # 成る手には "+" を追加
+            move_map.setdefault(key, []).append(t)
         else:
             piece = move.drop_piece_type
             t = shogi.SQUARE_NAMES[move.to_square]
