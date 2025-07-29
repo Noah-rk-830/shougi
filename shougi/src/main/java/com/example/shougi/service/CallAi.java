@@ -46,18 +46,26 @@ public class CallAi {
         }
 
         // 手番
+        data.setTesuD();
         String turn = "b";
-        if(data.isTeban()){
+        if(data.isP1S()){
             turn="b";
         }else{
             turn="w";
         }
 
         // 持ち駒
-        String hands = getHands(data.getP2M(), false) + getHands(data.getP1M(), true);
+        String hands;
+        System.out.println(data.isP1S());
+        if(data.isP1S()){
+            hands = getHands(data.getP2M(), false) + getHands(data.getP1M(), true);
+        }else{
+            hands = getHands(data.getP1M(), false) + getHands(data.getP2M(), true);
+        }
         if (hands.isEmpty()) hands = "-";
 
-        // 手数（省略もできるがここでは 1 固定）
+        // 手数
+        // data.setTesuD();
         return boardPart + " " + turn + " " + hands + " "+data.getTesu();
     }
 
@@ -99,6 +107,16 @@ public class CallAi {
             request,
             new ParameterizedTypeReference<>() {}
         );
+
+        // debug
+        System.out.println(sfen);
+        for(String key:response.getBody().keySet()){
+            System.out.print(key+":");
+            for(String val:response.getBody().get(key)){
+                System.out.print(val+",");
+            }
+            System.out.println();
+        }
     
         return response.getBody();
     }

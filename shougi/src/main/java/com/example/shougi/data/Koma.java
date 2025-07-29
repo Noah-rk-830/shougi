@@ -13,6 +13,12 @@ public class Koma {
     private String imgPath;//imgのpath /image/koma/?
     private String code;//sfen形式用 P,+r
 
+    public void setEmpty(){
+        this.setId(-1);
+        this.setDisp("");
+        this.setCode("");
+    }
+
     public void setImgPath(){
         String[]path1={"hu","kyou","kei","gin","kin","kaku","hisha","gyoku"};
         String[]path2={"tokin","narikyou","narikei","narigin","","ryouma","ryuuou",""};
@@ -85,5 +91,19 @@ public class Koma {
     }
     public boolean isSente(boolean p1S) {
         return (p1S && user == 1) || (!p1S && user == 2); // 先手かどうかを判定
+    }
+    public void setUchigoma(int kNo,int row,int col,boolean p1S) {
+        this.id=100+kNo; // 仮のID設定
+        this.kNo=kNo;
+        this.nari=false; // 持ち駒は成っていない状態から打たれる
+        this.user=1;     // 持ち駒を打つのは常に先手（プレイヤー1）と仮定
+
+        // posの計算 (rowは1-9, colは'a'-'i'に変換)
+        char colChar=(char)('a'+col);
+        this.pos=(row+1)+String.valueOf(colChar);
+
+        // その他のメンバを既存のメソッドで設定
+        values2Disp(); // dispとimgPathを設定
+        values2Code(p1S);
     }
 }

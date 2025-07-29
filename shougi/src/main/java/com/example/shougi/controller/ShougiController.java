@@ -1,6 +1,8 @@
 package com.example.shougi.controller;
 
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -99,8 +101,7 @@ public class ShougiController {
         bdForm=mainService.selectKoma(bdForm,mainData);
         model.addAttribute("bdForm",bdForm);
         
-        // return "game1";
-        return "test";
+        return "game1";
     }
     @PostMapping("/game2")
     public String game2(@ModelAttribute("bdForm")BdForm bdForm,Model model){
@@ -108,6 +109,6 @@ public class ShougiController {
         // bdForm=mainService.selectKoma(bdForm,mainData);駒を動かさせる
         model.addAttribute("bdForm",bdForm);
         
-        return "game2";
+        return "title";
     }
 }

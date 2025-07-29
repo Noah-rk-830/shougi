@@ -24,8 +24,25 @@ public class MainData {
     private boolean ai;//対AI=true
 
     // 駒コードの順番（歩, 香, 桂, 銀, 金, 角, 飛）
-    static final List<String> komaOrder = List.of("P", "L", "N", "S", "G", "B", "R");
+    private final List<String> komaOrder = List.of("P", "L", "N", "S", "G", "B", "R");
 
+
+    public void setTesuD(){
+        if(p1S){
+            tesu=1;
+            teban=true;
+        }else{
+            tesu=2;
+            teban=true;
+        }
+    }
+    public void setTeban(){
+        if(this.p1S){
+            this.teban=(this.tesu%2==1);
+        }else{
+            this.teban=(this.tesu%2==0);
+        }
+    }
 
     public List<List<Koma>> getReversedBoard() {
         if(bd == null){return null;}
@@ -114,9 +131,7 @@ public class MainData {
                     int count = ch - '0';
                     for (int j = 0; j < count; j++) {
                         Koma empty = new Koma();
-                        empty.setId(-1);
-                        empty.setDisp("");
-                        empty.setCode("");
+                        empty.setEmpty();
                         row.add(empty);
                         colIdx++;
                     }
@@ -188,6 +203,19 @@ public class MainData {
         }
         // --- 手数 ---
         tesu = Integer.parseInt(parts[3]);
+
+        // debug
+        System.out.println(hands);
+        System.out.print("p1m:");
+        for(int cnt:p1M){
+            System.out.print(cnt+",");
+        }
+        System.out.println();
+        System.out.print("p2m:");
+        for(int cnt:p2M){
+            System.out.print(cnt+",");
+        }
+        System.out.println();
     }
 
 }
