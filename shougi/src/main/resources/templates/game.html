@@ -52,13 +52,13 @@
                         style="width: 25px;" th:if="*{reverse==true}"></td>
                         <!-- 横方向の駒 -->
                         <td th:each="koma, colStat : ${row}"
-                            th:onclick="|selectCell(${rowStat.index}, ${colStat.index})|"
                             class="board">
                             <img th:if="${koma.imgPath}"
                                 th:src="@{${koma.imgPath}}"
                                 th:alt="${koma.disp}"
                                 th:classappend="${koma.user == 1} ? ' rotate-180' : ''"
-                                class="koma-image"/>
+                                class="koma-image"
+                                th:onclick="|selectCell(${rowStat.index}, ${colStat.index})|"/>
                         </td>
                         <!-- 行の左端：漢数字 -->
                         <td class="kansuji" th:text="*{kansuji[__${rowStat.index}__]}" 

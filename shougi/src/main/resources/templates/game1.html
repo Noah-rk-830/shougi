@@ -4,7 +4,6 @@
 <head>
 <meta charset="UTF-8">
 <link th:href="@{/css/mycss.css}" rel="stylesheet" type="text/css">
-<!-- <link rel="stylesheet" href="../static/css/mycss.css" type="text/css"> -->
 <title>対局</title>
 </head>
 <body>
@@ -47,38 +46,37 @@
                 </thead>
                 <tbody>
                     <tr th:each="row, rowStat : *{bd}">
+                        <td class="kansuji" th:text="*{kansuji[__${rowStat.index}__]}" 
+                            style="width: 25px;" th:if="*{reverse==true}"></td>
                         <td th:each="koma, colStat : ${row}"
     th:with="isMoving = (${rowStat.index} == *{selectedRow} and ${colStat.index} == *{selectedCol}),
              isInMoveList = ${bdForm.isInMoveList(rowStat.index, colStat.index)}"
     th:if="*{reverse==false}">
-
-    <div th:onclick="|handleClick(${rowStat.index}, ${colStat.index}, ${isInMoveList})|"
-     th:classappend="${isMoving} ? ' moving-cell' : (${isInMoveList} ? ' movable-cell' : '')"
-     class="board"
-     th:style="${isInMoveList} ? 'background-color: yellow;min-width: 60px;min-height: 60px;' : ''">
-     <img th:if="${koma.imgPath}"
-         th:src="@{${koma.imgPath}}"
-         th:alt="${koma.disp}"
-         th:classappend="${koma.user == 1} ? ' rotate-180' : ''"
-         class="koma-image"/>
+    <div th:onclick="|handleClick(${rowStat.index}, ${colStat.index}, ${isInMoveList}, ${bdForm.getCanNari(rowStat.index, colStat.index)})|"
+    th:classappend="${isMoving} ? ' moving-cell' : (${isInMoveList} ? ' movable-cell' : '')"
+    class="board"
+    th:style="${isInMoveList} ? 'background-color: yellow;min-width: 60px;min-height: 60px;' : ''">
+   <img th:if="${koma.imgPath}"
+        th:src="@{${koma.imgPath}}"
+        th:alt="${koma.disp}"
+        th:classappend="${koma.user == 1} ? ' rotate-180' : ''"
+        class="koma-image"/>
 </div>
 </td>
-
 <td th:each="koma, colStat : ${row}"
     th:with="isMoving = (${rowStat.index} == *{selectedRow} and ${colStat.index} == *{selectedCol}),
              isInMoveList = ${bdForm.isInMoveList(rowStat.index, colStat.index)}"
     th:if="*{reverse==true}">
-
-    <div th:onclick="|handleClick(${rowStat.index}, ${colStat.index}, ${isInMoveList})|"
-     th:classappend="${isMoving} ? ' moving-cell' : (${isInMoveList} ? ' movable-cell' : '')"
-     class="board"
-     th:style="${isInMoveList} ? 'background-color: yellow;min-width: 60px;min-height: 60px;' : ''">
-     <img th:if="${koma.imgPath}"
+    <div th:onclick="|handleClick(${rowStat.index}, ${colStat.index}, ${isInMoveList}, ${bdForm.getCanNari(rowStat.index, colStat.index)},${bdForm.isForcePromotion(rowStat.index, colStat.index)},${bdForm.isForcePromotion(rowStat.index, colStat.index)})|"
+         th:classappend="${isMoving} ? ' moving-cell' : (${isInMoveList} ? ' movable-cell' : '')"
+         class="board"
+         th:style="${isInMoveList} ? 'background-color: yellow;min-width: 60px;min-height: 60px;' : 'min-width: 60px;min-height: 60px;'">
+         <img th:if="${koma.imgPath}"
          th:src="@{${koma.imgPath}}"
          th:alt="${koma.disp}"
          th:classappend="${koma.user == 1} ? ' rotate-180' : ''"
          class="koma-image"/>
-</div>
+    </div>
 </td>
                         <td class="kansuji" th:text="*{kansuji[__${rowStat.index}__]}" 
                             style="width: 25px;" th:if="*{reverse==false}"></td>
@@ -111,11 +109,19 @@
             </table>
             </div>
         </div>
-        <input type="hidden" id="selectedRow" name="selectedRow" th:field="*{selectedRow}" />
-        <input type="hidden" id="selectedCol" name="selectedCol" th:field="*{selectedCol}" />
-        <input type="hidden" id="selectedMochigomaKNo" name="selectedMochigomaKNo" th:field="*{selectedMochigomaKNo}" />
-        <input type="hidden" id="moveToRow" name="moveToRow" th:field="*{moveToRow}"/>
-        <input type="hidden" id="moveToCol" name="moveToCol" th:field="*{moveToCol}"/>
+        <div id="promotion-popup-overlay"></div>
+<div id="promotion-popup">
+    <p>成りますか？</p>
+    <button id="promote-yes">はい</button>
+    <button id="promote-no">いいえ</button>
+</div>
+
+<input type="hidden" id="selectedRow" name="selectedRow" th:field="*{selectedRow}" />
+<input type="hidden" id="selectedCol" name="selectedCol" th:field="*{selectedCol}" />
+<input type="hidden" id="selectedMochigomaKNo" name="selectedMochigomaKNo" th:field="*{selectedMochigomaKNo}" />
+<input type="hidden" id="moveToRow" name="moveToRow" th:field="*{moveToRow}"/>
+<input type="hidden" id="moveToCol" name="moveToCol" th:field="*{moveToCol}"/>
+<input type="hidden" id="promoteMove" name="promoteMove"/> </form>
     </form>
     <script>
         function selectCell(row, col) {
@@ -128,19 +134,64 @@
             document.getElementById("selectedMochigomaKNo").value = kNo;
             document.getElementById("bdForm").submit();
         }
+// ポップアップ要素の取得
+const promotionPopupOverlay = document.getElementById('promotion-popup-overlay');
+const promotionPopup = document.getElementById('promotion-popup');
+const promoteYesButton = document.getElementById('promote-yes');
+const promoteNoButton = document.getElementById('promote-no');
+const promoteMoveInput = document.getElementById('promoteMove');
+// 選択中の駒と移動先マスを一時的に保持する変数
+let currentSelectedRow, currentSelectedCol, currentMoveToRow, currentMoveToCol;
+let currentIsMochigoma; 
 
-        function handleClick(row, col, isMovable) {
-    console.log(`handleClick called: row=${row}, col=${col}, isMovable=${isMovable}, type=${typeof isMovable}`); // デバッグログを追加
+function handleClick(row, col, isMovable, isPromotionCandidate,isForcePromotionCandidate) { // ★ isPromotionCandidate を追加
+    console.log(`handleClick called: row=${row}, col=${col}, isMovable=${isMovable}, isPromotionCandidate=${isPromotionCandidate}, type=${typeof isMovable}`);
     if (isMovable === true) {
-        document.getElementById("moveToRow").value = row;
-        document.getElementById("moveToCol").value = col;
-        document.getElementById("bdForm").action = "/shogi/game2";
+        // 現在選択中の駒の元マスと移動先マスを一時的に保持
+        // これらの値はポップアップの「はい」「いいえ」ボタンで利用されます
+        currentSelectedRow = document.getElementById("selectedRow").value; // 元の駒の行
+        currentSelectedCol = document.getElementById("selectedCol").value; // 元の駒の列
+        currentMoveToRow = row; // クリックされた移動先の行
+        currentMoveToCol = col; // クリックされた移動先の列
+        if(isForcePromotionCandidate==true){
+            console.log("強制成り");
+        }else if(isPromotionCandidate){
+            console.log("成り可能");
+        }else{
+            console.log("成り不可");
+        }
+        if (isForcePromotionCandidate === true) {
+            console.log("強制成り: ポップアップを表示せずに自動で成ります。");
+            document.getElementById("moveToRow").value = currentMoveToRow;
+            document.getElementById("moveToCol").value = currentMoveToCol;
+            document.getElementById("promoteMove").value = "true"; // 強制成りなので "true"
+            document.getElementById("bdForm").action = "/shogi/game2";
+            document.getElementById("bdForm").submit();
+        }else if (isPromotionCandidate === true) { // ★ BdForm.getCanNari の結果を使用
+            // 成りの選択肢がある場合、ポップアップを表示
+            showPromotionPopup();
+        } else {
+            // 成りの選択肢がない場合、または成れない駒・場所への移動の場合、
+            // そのまま不成としてフォームを送信
+            console.log("Promotion not required (or not possible), submitting form for direct move (no promotion).");
+            document.getElementById("moveToRow").value = currentMoveToRow;
+            document.getElementById("moveToCol").value = currentMoveToCol;
+            document.getElementById("promoteMove").value = "false"; // 成らない
+            document.getElementById("bdForm").action = "/shogi/game2"; // 通常の移動アクション
+            document.getElementById("bdForm").submit();
+        }
     } else {
+        // 合法手ではないマスをクリックした場合（駒の選択、または空マス選択）
         document.getElementById("selectedRow").value = row;
         document.getElementById("selectedCol").value = col;
-        document.getElementById("bdForm").action = "/shogi/gameret";
+        document.getElementById("promoteMove").value = "false"; // 成らない
+        document.getElementById("bdForm").action = "/shogi/gameret"; // 駒を選択するアクション
+        document.getElementById("bdForm").submit();
     }
-    document.getElementById("bdForm").submit();
+}
+function showPromotionPopup() {
+    promotionPopupOverlay.style.display = 'block';
+    promotionPopup.style.display = 'block';
 }
     </script>
     <style>
@@ -150,6 +201,54 @@
         .movable-cell {
             background-color: yellow;
         }
+        #promotion-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* 半透明の黒 */
+    z-index: 1000; /* 他の要素より手前に表示 */
+    display: none; /* 初期状態では非表示 */
+}
+
+#promotion-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* 中央に配置 */
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1001; /* オーバーレイより手前に表示 */
+    text-align: center;
+    display: none; /* 初期状態では非表示 */
+}
+
+#promotion-popup p {
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+#promotion-popup button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+#promote-yes {
+    background-color: #4CAF50; /* 緑 */
+    color: white;
+}
+
+#promote-no {
+    background-color: #f44336; /* 赤 */
+    color: white;
+}
     </style>
 </body>
 </html>
