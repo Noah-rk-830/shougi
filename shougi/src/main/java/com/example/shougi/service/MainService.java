@@ -23,5 +23,5 @@ public interface MainService {
     public Map<String, List<String>>getLegalMoves(MainData data);
     public List<List<Integer>> getDropList(int selectedMochigomaKNo, MainData data);
     // 駒を動かす
-    public BdForm moveKoma(BdForm bdForm,MainData mainData);
+    public MainData moveKoma(BdForm bdForm,MainData mainData);
 }

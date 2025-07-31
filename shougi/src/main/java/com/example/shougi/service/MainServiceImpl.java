@@ -118,6 +118,7 @@ public class MainServiceImpl implements MainService{
             System.out.print(cnt+",");
         }
         System.out.println();
+        mainData.setKifu(new Kifu());
 
         return bdForm;
     }
@@ -276,8 +277,9 @@ public class MainServiceImpl implements MainService{
     }
     @Override
     // 駒を動かす
-    public BdForm moveKoma(BdForm bdForm,MainData mainData){
-        if(bdForm.getSelectedRow()!=null){
+    public MainData moveKoma(BdForm bdForm,MainData mainData){
+
+        if(bdForm.getSelectedRow()!=null){//動かす駒の座標　が指定されているとき
             List<List<Koma>>bd=mainData.getBd();
             Koma tmp=bd.get(bdForm.getMoveToCol()).get(bdForm.getMoveToRow());
             Koma move=bd.get(bdForm.getSelectedCol()).get(bdForm.getSelectedRow());
@@ -292,7 +294,7 @@ public class MainServiceImpl implements MainService{
                 int kNo=tmp.getKNo();
                 mainData.getP1M().set(kNo,mainData.getP1M().get(kNo)+1);
             }
-        }else if(bdForm.getSelectedMochigomaKNo()!=null){
+        }else if(bdForm.getSelectedMochigomaKNo()!=null){//打つ駒の番号　が指定されているとき
             Koma km=new Koma();
             km.setUchigoma(bdForm.getSelectedMochigomaKNo(),bdForm.getMoveToRow(),
                 bdForm.getMoveToCol(),mainData.isP1S());
@@ -301,9 +303,17 @@ public class MainServiceImpl implements MainService{
             int num=p1M.get(bdForm.getSelectedMochigomaKNo());
             p1M.set(bdForm.getSelectedMochigomaKNo(),num-1);
             bd.get(bdForm.getMoveToCol()).set(bdForm.getMoveToRow(),km);
-        }else{
+        }else{//どちらも指定されていないとき:正常にデータが渡されていない
             System.out.println("不正なデータ");
+            System.out.println("SelectedRow:"+bdForm.getSelectedRow());
+            System.out.println("SelectedCol:"+bdForm.getSelectedCol());
+            System.out.println("SelectedMochigomaKNo:"+bdForm.getSelectedMochigomaKNo());
+            return mainData;
         }
-        return bdForm;
+        String sfen=mainData.bd2Sfen();
+        Kifu kf=mainData.getKifu();
+        Boolean check=kf.addKifuData(sfen);
+        mainData.setNextTurnSub();//手数、手番を編集
+        return mainData;
     }
 }
