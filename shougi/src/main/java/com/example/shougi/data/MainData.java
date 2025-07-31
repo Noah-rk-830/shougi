@@ -22,6 +22,7 @@ public class MainData {
     private boolean teban;//先手番:true
     private int tesu=1;//手数
     private boolean ai;//対AI=true
+    private Kifu kifu;
 
     // 駒コードの順番（歩, 香, 桂, 銀, 金, 角, 飛）
     private final List<String> komaOrder = List.of("P", "L", "N", "S", "G", "B", "R");
@@ -42,6 +43,10 @@ public class MainData {
         }else{
             this.teban=(this.tesu%2==0);
         }
+    }
+    public void setNextTurnSub(){
+        this.tesu++;
+        this.teban=!this.teban;
     }
 
     public List<List<Koma>> getReversedBoard() {
