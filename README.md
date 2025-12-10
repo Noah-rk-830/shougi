@@ -61,6 +61,8 @@
 * **ライブラリ**: python-shogi, Flask
 
 ---
-*バグや不具合はXまで[Noah'rk](https://x.com/noah_rk2830)
+*バグや不具合はX(dm)まで:[Noah'rk](https://x.com/noah_rk2830)
+
 *Created by [Noah-rk-830]*
+
 
